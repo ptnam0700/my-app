@@ -19,11 +19,11 @@ export class CartComponent {
   paymentForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     name: new FormControl('', Validators.required),
-    cardNo: new FormControl(null, [Validators.required]),
-    expiry: new FormControl('', Validators.required),
-    cvc: new FormControl(null, [Validators.required]),
+    cardNo: new FormControl('', [Validators.required, Validators.pattern(/^\d{16}$/)]),
+    expiry: new FormControl('', [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])\/?([0-9]{2}|[0-9]{4})$/)]),
+    cvc: new FormControl('', [Validators.required, Validators.pattern(/^\d{3,4}$/)]),
     billingAddress: new FormControl('', Validators.required)
-  });;
+  });
 
   constructor(public cartService: CartService) {}
 
@@ -52,22 +52,34 @@ export class CartComponent {
   }
 
   placeOrder() {
-    // if(!this.paymentForm.valid) return;
-    this.totalAmount = this.cartService.calculateTotalAmount();
-
-    this.isConfirmationVisible = true;
-    this.cartService.clearCart();
+    if (this.paymentForm.valid) {
+      this.totalAmount = this.cartService.calculateTotalAmount();
+      this.isConfirmationVisible = true;
+      this.cartService.clearCart();
+    } else {
+      this.paymentForm.markAllAsTouched();
+    }
   }
 
   get email() {
-    return this.paymentForm.get('email')?.value;
+    return this.paymentForm.get('email');
   }
 
   get name() {
-    return this.paymentForm.get('name')?.value;
+    return this.paymentForm.get('name');
   }
 
   get address() {
-    return this.paymentForm.get('billingAddress')?.value;
+    return this.paymentForm.get('billingAddress');
+  }
+
+  get cardNo() {
+    return this.paymentForm.get('cardNo');
+  }
+  get expiry() {
+    return this.paymentForm.get('expiry');
+  }
+  get cvc() {
+    return this.paymentForm.get('cvc');
   }
 }

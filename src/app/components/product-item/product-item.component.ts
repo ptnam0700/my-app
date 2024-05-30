@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { Product } from 'src/app/models/product.model';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CartProduct, Product } from 'src/app/models/product.model';
 import { CartService } from 'src/app/services/cart.service';
 
 @Component({
@@ -9,15 +9,18 @@ import { CartService } from 'src/app/services/cart.service';
 })
 export class ProductItemComponent {
   @Input() product!: Product;
+  @Output() onAddToCart: EventEmitter<CartProduct> = new EventEmitter<CartProduct>();
+
   quantity: number = 1;
 
-  constructor(private cartService: CartService) {}
+  constructor() {}
 
   addToCart() {
     const cartProduct = {
       ...this.product,
       quantity: this.quantity
-    }
-    this.cartService.addToCart(cartProduct);
+    } as CartProduct;
+
+    this.onAddToCart.emit(cartProduct);
   }
 }

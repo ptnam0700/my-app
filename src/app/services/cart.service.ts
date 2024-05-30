@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { CartProduct } from "../models/product.model";
 import { BehaviorSubject, Observable } from "rxjs";
 import { DeliveryOption } from "../models/delivery.model";
+import { ToastrService } from "ngx-toastr";
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +36,7 @@ export class CartService {
     this._deliveryOption = val;
   }
 
-  constructor() {
+  constructor(private toastr: ToastrService) {
     this.loadInitialData();
   }
 
@@ -66,6 +67,8 @@ export class CartService {
 
     this.cartProductsSubject.next(currentCartProducts);
     this.saveCart(currentCartProducts);
+
+    this.showAddSuccess(item);
   }
 
   public removeFromCart(item: CartProduct) {
@@ -73,6 +76,8 @@ export class CartService {
 
     this.cartProductsSubject.next(updatedCartProducts);
     this.saveCart(updatedCartProducts);
+
+    this.showRemoveSuccess(item);
   }
 
   public clearCart() {
@@ -91,5 +96,13 @@ export class CartService {
   public calculateTotalAmount(): number {
     const deliveryPrice = this.deliveryOption?.price || 0;
     return this.calculateSubTotalAmount() + deliveryPrice;
+  }
+
+  private showAddSuccess(item: CartProduct) {
+    this.toastr.success(`${item.quantity} ${item.name}`, `Added Successfully`);
+  }
+
+  private showRemoveSuccess(item: CartProduct) {
+    this.toastr.success(`${item.quantity} ${item.name}`, `Removed Successfully`);
   }
 }
